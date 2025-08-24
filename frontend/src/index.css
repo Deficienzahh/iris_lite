@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+@import "tailwindcss";
+
+/* Colori personalizzati per IRIS */
+:root {
+  --iris-blue: #22d3ee;
+  --iris-blue-light: #67e8f9;
+  --iris-blue-dark: #0891b2;
+  --vh: 100%;
+}
+.no-transition * {
+  transition: none !important;
+}
+
+body {
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden; 
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Classi personalizzate */
+.font-orbitron {
+  font-family: 'Orbitron', monospace;
+}
+
+.text-iris-blue {
+  color: var(--iris-blue);
+}
+
+.bg-iris-blue {
+  background-color: var(--iris-blue);
+}
+
+.border-iris-blue {
+  border-color: var(--iris-blue);
+}
+
+/* Animazioni personalizzate */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 2s linear infinite;
+}

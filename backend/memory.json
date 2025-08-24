@@ -1,0 +1,50 @@
+{
+  "nome": "Lorenzo",
+  "città": "Matera",
+  "titolo": "signore",
+  "età": 15,
+  "scuola": "Istituto tecnico industriale",
+  "indirizzo_scolastico": "informatica",
+  "interessi": [
+    "tecnologia",
+    "intelligenza artificiale",
+    "videogiochi",
+    "programmazione",
+    "musica"
+  ],
+  "ispirazioni": [
+    "film di Ironman",
+    "JARVIS dal film di Ironman"
+  ],
+  "progetti": [
+    "sviluppo di un assistente virtuale"
+  ],
+  "videogiochi_preferiti": [
+    "Minecraft",
+    "Euro Truck Simulator 2",
+    "Diablo Immortal",
+    "Fx Racer",
+    "Traffic Rider"
+  ],
+  "attivita_sportiva": "atletica",
+  "specialita_atletica": "mezzofondista",
+  "distanze_preferite": [
+    "600mt",
+    "1000mt",
+    "2000mt"
+  ],
+  "allenatore": "Carmine",
+  "calendario": "Personale",
+  "anno": 2025,
+  "azione_corrente": "visualizzazione degli eventi di oggi",
+  "azione_precedente": "impostazione di un timer di 50 secondi",
+  "parentela": {
+    "cugina": "Simona"
+  },
+  "argomenti_di_interesse": [
+    "sviluppo di assistenti virtuali",
+    "intelligenza artificiale",
+    "tecnologie di configurazione e personalizzazione"
+  ],
+  "data_di_nascita": "5 luglio 2010"
+}
