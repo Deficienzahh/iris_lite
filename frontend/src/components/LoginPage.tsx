@@ -52,9 +52,7 @@ const LoginPage = () => {
 
       const data = await res.json();
       if (data.success) {
-        const scadenza = Date.now() + 15 * 60 * 1000; // 15 minuti da ora
         sessionStorage.setItem("loggedIn", "true");
-        sessionStorage.setItem("expiresAt", scadenza.toString());
         navigate("/");
       } else {
         setErrore(data.error || "Errore generico");

@@ -1,6 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_sock import Sock
+from utils.vosk_setup import setup_vosk_model
+import os 
+setup_vosk_model()
 
 # Import blueprint
 from api.auth import auth_bp
@@ -54,5 +57,5 @@ def websocket(ws):
 
 # --- Main ---
 if __name__ == "__main__":
-    print("🚀 Avvio del server Flask...")
-    app.run(debug=True, host="127.0.0.1", port=5100)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

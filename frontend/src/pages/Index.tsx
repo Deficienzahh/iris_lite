@@ -113,16 +113,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    const loggedIn = sessionStorage.getItem("loggedIn") === "true";
-    const expiresAt = parseInt(sessionStorage.getItem("expiresAt") || "0");
-    const now = Date.now();
-
-    if (!loggedIn || now > expiresAt) {
-      sessionStorage.clear();
-      navigate("/login");
-      return;
-    }
-
     const headerTimer = setTimeout(() => {
       setHeaderLoaded(true);
     }, 100);

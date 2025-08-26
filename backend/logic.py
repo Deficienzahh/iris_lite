@@ -47,46 +47,6 @@ def open_website(sito):
     print(f"Apro il sito: {url}")
     webbrowser.open(url)
 
-def restart():
-    python = sys.executable
-    os.execl(python, python, *sys.argv)
-
-def shutdown():
-    subprocess.run(["osascript", "-e", 'tell app "System Events" to shut down'])
-
-def logout():
-    subprocess.run(["osascript", "-e", 'tell application "System Events" to log out'])
-
-def open_terminal():
-    subprocess.run(["open", "-a", "iTerm"])
-
-def open_finder():
-    subprocess.run(["open", "-a", "Finder"])
-
-def open_settings():
-    subprocess.run(["open", "-a", "System Preferences"])
-
-def open_calculator():
-    subprocess.run(["open", "-a", "Calculator"])
-
-def open_note_editor():
-    subprocess.run(["open", "-a", "Notes"])
-
-def open_spotify():
-    subprocess.run(["open", "-a", "Spotify"])
-
-def open_browser():
-    subprocess.run(["open", "-a", "Firefox"])
-
-def open_mail():
-    subprocess.run(["open", "-a", "Mail"])
-
-def open_calendar():
-    subprocess.run(["open", "-a", "Calendar"])
-
-def open_clock():
-    subprocess.run(["open", "-a", "Clock"])
-
 def get_gps_city():
     for _ in range(5):  # massimo 5 tentativi
         try:
@@ -162,32 +122,6 @@ def ip():
         speak("Errore nel recupero dell'IP.")
         return("Errore nel recupero dell'IP.")
 
-def asitop():
-
-    script = '''
-    tell application "iTerm"
-        activate
-        create window with default profile
-        tell current session of current window
-            write text "sudo /Library/Frameworks/Python.framework/Versions/3.11/bin/asitop"
-        end tell
-    end tell
-    '''
-    subprocess.run(["osascript", "-e", script])
-
-
-def neofetch():
-    script = '''
-    tell application "iTerm"
-        activate
-        create window with default profile
-        tell current session of current window
-            write text "neofetch"
-        end tell
-    end tell
-    '''
-    subprocess.run(["osascript", "-e", script])
-
 def cpu():
     cpu = psutil.cpu_percent()
     print(colored(f"Utilizzo della CPU: {cpu}%", "yellow"))
@@ -229,18 +163,6 @@ def battery():
         print(colored("Nessun sensore di batteria trovato.", "red"))
         speak("Nessun sensore di batteria trovato.")
         return("Nessun sensore di batteria trovato.")
-
-def random_psw():
-    import random
-    import string
-
-    length = 12  # Lunghezza della password
-    characters = string.ascii_letters + string.digits + string.punctuation
-    password = ''.join(random.choice(characters) for i in range(length))
-    print(colored(f"La tua nuova password casuale è: {password}", "yellow"))
-    speak(f"La tua nuova password casuale è: {password}")
-    return(f"La tua nuova password casuale è: {password}")
-    
 
 def random_number():
     import random
