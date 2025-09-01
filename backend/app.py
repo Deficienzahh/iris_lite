@@ -23,13 +23,15 @@ from api.ws_manager import ws_manager
 import main  # la tua logica principale
 
 # --- App setup ---
-app = Flask(__name__, static_folder="frontend/dist")  # serve i file React buildati
+app = Flask(__name__, static_folder="../frontend/dist")  # serve i file React buildati
 sock = Sock(app)
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://tuo-username.pythonanywhere.com"
+    "https://tuo-username.pythonanywhere.com",
+    "https://*.railway.app",  # Aggiungi questo per Railway
+    "https://*.up.railway.app"  # E questo per i domini custom
 ]
 CORS(app, resources={r"/api/*": {"origins": CORS_ALLOWED_ORIGINS}})
 
