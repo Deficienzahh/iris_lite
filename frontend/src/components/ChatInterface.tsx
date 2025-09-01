@@ -24,7 +24,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onSummaryReceived,
   zIndex,
   onStartDrag,
-  isAppLoaded,
 }) => {
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
