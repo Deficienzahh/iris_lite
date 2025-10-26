@@ -13,7 +13,24 @@ else:
 
 def get_config(key: str, default=None):
     """
-    Restituisce la variabile d'ambiente `key`, altrimenti la prende da config.json,
-    altrimenti restituisce `default` se non trovata.
+    Restituisce la variabile d'ambiente (tentando prima KEY_MAIUSCOLO), 
+    altrimenti la prende da config.json (tentando prima key_minuscola),
+    altrimenti restituisce `default`.
+    
+    Priority: ENV (MAIUSC) -> JSON (minuscolo) -> Default
     """
-    return os.getenv(key) or config_data.get(key, default)
+    
+    # 1. Tenta di leggere la variabile d'ambiente in MAIUSCOLO (convenzione cloud)
+    key_maiusc = key.upper()
+    env_value = os.getenv(key_maiusc)
+    if env_value is not None:
+        return env_value
+    
+    # 2. Tenta di leggere dal file config.json in minuscolo (vecchia convenzione)
+    key_minusc = key.lower()
+    json_value = config_data.get(key_minusc)
+    if json_value is not None:
+        return json_value
+        
+    # 3. Restituisce il valore di default
+    return default
