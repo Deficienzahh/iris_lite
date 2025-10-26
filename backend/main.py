@@ -171,3 +171,96 @@ def groq_for_http(frase_pulita):
     chat_history.append({"role": "assistant", "content": risposta})
 
     return risposta, command_name
+
+
+def groq_for_websocket(frase_pulita, ws):
+    """
+    Funzione per gestire la logica da WebSocket, inviando la risposta e poi
+    il comando in modo asincrono. Prima prova con gli alias offline.
+    """
+    # 🔎 1. Controllo alias offline
+    alias_result = search_offline_command(frase_pulita)
+    if alias_result:
+        comando = alias_result["command"]
+        risposta_pulita = alias_result["response"]
+
+        # invia risposta al client
+        message_to_send = {
+            "type": "iris_response",
+            "content": risposta_pulita,
+            "command_name": comando
+        }
+        print("✅ Invio risposta alias via WebSocket:", message_to_send)
+        ws.send(json.dumps(message_to_send))
+
+        # parla la risposta alias
+        threading.Thread(target=speak, args=(risposta_pulita,), daemon=True).start()
+
+        # esegui comando offline in async
+        print(f"🔧 Avvio esecuzione asincrona del comando alias '{comando}'")
+        command_thread = threading.Thread(target=process_command_async, args=(ws, comando, []))
+        command_thread.daemon = True
+        command_thread.start()
+
+        return  # ⬅️ stop: non andare su Groq se alias ha risolto
+
+    # 🔎 2. Se non è un alias → prosegui con Groq
+    client = Groq(api_key=GROQ_API_KEY)
+    chat_history.append({"role": "user", "content": frase_pulita})
+    MAX_MESSAGES = 5
+    messages_to_send = [chat_history[0]]
+    
+    if len(chat_history) > MAX_MESSAGES + 1:
+        messages_to_send.extend(chat_history[-(MAX_MESSAGES):])
+    else:
+        messages_to_send.extend(chat_history[1:])
+    
+    comando_brut = None
+    comando = "None" # Inizializza il comando
+    argomenti = []
+
+    try:
+        response = client.chat.completions.create(
+            messages=chat_history,
+            model="openai/gpt-oss-120b",
+            temperature=1,
+        )
+
+        risposta = response.choices[0].message.content
+        print(f"🧠 Risposta raw da Groq: {risposta}")
+        risposta_pulita = re.sub(r"\[.*?\]", "", risposta).strip()
+        
+        threading.Thread(target=speak, args=(risposta_pulita,), daemon=True).start()
+
+        chat_history.append({"role": "assistant", "content": risposta})
+
+        match = re.search(r"\[(.*?)\]", risposta)
+        if match:
+            comando_brut = "[" + match.group(1) + "]"
+            comando, argomenti = parse_comando_brut(comando_brut)
+
+        # Costruisci un unico oggetto JSON da inviare al client
+        message_to_send = {
+            "type": "iris_response",
+            "content": risposta_pulita,
+            "command_name": comando if comando and comando != "None" else "None"
+        }
+
+        # Invia l'oggetto JSON completo in una sola volta
+        print("✅ Invio risposta completa via WebSocket:", message_to_send)
+        ws.send(json.dumps(message_to_send))
+        
+        threading.Thread(target=estrai_info_utente, args=(formatta_chat(chat_history),), daemon=True).start()
+        
+    except Exception as e:
+        msg = f"Non posso rispondere, si è verificato un errore: {e}"
+        print(colored("IRIS:", "blue"), msg)
+        ws.send(json.dumps({"type": "error", "content": msg}))
+        return
+
+    if comando and comando != "None":
+        print(f"🔧 Avvio esecuzione asincrona del comando '{comando}' con argomenti: {argomenti}")
+        command_thread = threading.Thread(target=process_command_async, args=(ws, comando, argomenti))
+        command_thread.daemon = True
+        command_thread.start()
+
