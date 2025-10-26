@@ -26,3 +26,4 @@ urllib3==2.5.0
 vosk==0.3.44
 websockets==15.0.1
 pyobjc==11.1; sys_platform == "darwin"
+flask==3.0.2
