@@ -90,7 +90,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       clearTimeout(reconnectTimeoutRef.current);
     }
 
-    const websocket = new WebSocket(`ws://${window.location.hostname}:5100/ws`);
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const websocket = new WebSocket(`${protocol}://${window.location.hostname}/ws`);
     wsRef.current = websocket;
 
     websocket.onopen = () => {
