@@ -10,7 +10,7 @@ setup_vosk_model()
 # --- Import blueprint ---
 from api.auth import auth_bp
 from api.gps import gps_bp
-from api.voice import voice_bp
+#from api.voice import voice_bp   # Temporaneamente disabilitato
 from api.iris import iris_bp
 from api.system import system_bp
 from api.calendar import calendar_bp
@@ -38,7 +38,7 @@ CORS(app, resources={r"/api/*": {"origins": CORS_ALLOWED_ORIGINS}})
 # --- Registrazione blueprint ---
 app.register_blueprint(auth_bp)
 app.register_blueprint(gps_bp)
-app.register_blueprint(voice_bp)
+#app.register_blueprint(voice_bp)
 app.register_blueprint(iris_bp)
 app.register_blueprint(system_bp)
 app.register_blueprint(calendar_bp)
