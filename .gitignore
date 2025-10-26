@@ -1,5 +1,6 @@
 config.json
-backend/vosk-model-it-big
+backend/models
+
 # Logs
 logs
 *.log
