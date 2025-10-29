@@ -20,6 +20,7 @@ import time
 from utils.run_applescript import run_applescript
 
 
+IRIS_API_URL = get_config("IRIS_API_URL", "http://127.0.0.1:5100")
 weather_api_key = get_config("weather_api_key")
 wakeword = get_config("wake_word")
 wolfram_appid = get_config("wolframalpha_api_key")
@@ -48,34 +49,43 @@ def open_website(sito):
     webbrowser.open(url)
 
 def get_gps_city():
+    """Tenta di recuperare la città GPS dal server Iris."""
+    
+    api_endpoint = f"{IRIS_API_URL}/api/get_gps_position"
+    
     for _ in range(5):  # massimo 5 tentativi
         try:
-            res = requests.get("http://127.0.0.1:5100/api/get_gps_position")
+            res = requests.get(api_endpoint)
             city = res.json().get("gps_city")
             if city:
                 return city
         except:
             pass
         time.sleep(0.2)  # aspetta 200ms
-    return "Roma"  # fallback
-
-
+        
+    # Come fallback, potresti usare la tua città salvata se accessibile:
+    # return "Matera" # Utilizzando l'informazione salvata: vivi a Matera.
+    return "Roma"  # fallback originale
+    
+    
 def weather(city=None):
     """
     Comando weather: usa la città passata come argomento oppure la prende dal backend Flask.
     """
+    api_endpoint = f"{IRIS_API_URL}/api/gps_position"
+    
     if city:
         # Se ricevo la città come argomento, aggiorno anche Flask
         try:
             requests.post(
-                "http://127.0.0.1:5100/api/gps_position",
+                api_endpoint,
                 json={"gps_city": city}
             )
-            print(f"✅ Città aggiornata su Flask: {city}")
+            print(f"✅ Città aggiornata su Iris: {city}")
         except Exception as e:
-            print(f"❌ Impossibile aggiornare la città su Flask: {e}")
+            print(f"❌ Impossibile aggiornare la città su Iris: {e}")
     else:
-        # Nessuna città fornita: recupera da Flask
+        # Nessuna città fornita: recupera da Iris
         city = get_gps_city()
         print(f"🔍 Città determinata tramite GPS: {city}")
 
@@ -679,17 +689,6 @@ def google_search(query):
 def open_google_maps(query):
     url = f'https://www.google.com/maps/search/?api=1&query={query}'
     webbrowser.open(url)
-
-
-def new_txt_file(file_name="nuovo_file", content=""):
-    user_path = os.path.expanduser("~")
-    file_path = os.path.join(user_path, "Desktop", f"{file_name}.txt")
-    try:
-        with open(file_path, 'w') as f:
-            f.write(content)
-        return f"Ho creato il file {file_name}.txt sul tuo desktop."
-    except Exception as e:
-        return f"❌ Errore creazione file: {str(e)}"
     
 def get_video_id(video_url):
     """
@@ -775,9 +774,14 @@ def video_summary(video_url: str) -> str:
     try:
         summary = summarize_youtube_video(video_url)
         
-        # Invia il riassunto all'endpoint del server Flask.
-        # Assicurati che il tuo server Flask sia in ascolto sulla porta 5100.
-        response = requests.post("http://localhost:5100/api/summary", json={"summary": summary})
+        # Costruisci l'endpoint API usando la variabile dinamica
+        api_endpoint = f"{IRIS_API_URL}/api/summary"
+        
+        # Invia il riassunto all'endpoint dinamico
+        response = requests.post(
+            api_endpoint, # Usa l'endpoint dinamico
+            json={"summary": summary}
+        )
         
         if response.status_code == 200:
             return "✅ Sto riassumendo il video. Il riassunto apparirà a breve nel widget."
@@ -797,11 +801,17 @@ def wikipedia_summary(query):
 
 def start_timer(name, seconds):
     """Avvia un timer con un nome e durata in secondi."""
+    
+    # 1. Costruisci l'URL base usando la variabile dinamica
+    api_endpoint = f"{IRIS_API_URL}/api/timers" 
+    
     try:
         response = requests.post(
-            "http://127.0.0.1:5100/api/timers",
+            api_endpoint, # Usa l'endpoint dinamico
             json={"name": name, "seconds": int(seconds)}
         )
+        # Controlla se il protocollo è HTTPS su Render e usa la porta 443 standard
+        
         return response.json().get("message", "Errore nell'avvio del timer.")
     except Exception as e:
         return f"Errore: {e}"
@@ -809,18 +819,28 @@ def start_timer(name, seconds):
 def cancel_timer(name):
     """Cancella un timer dato il nome."""
     try:
-        response = requests.delete(f"http://127.0.0.1:5100/api/timers/{name}")
+        # Costruisce l'URL usando IRIS_API_URL e gestendo l'endpoint
+        api_endpoint = f"{IRIS_API_URL}/api/timers/{name}"
+        
+        response = requests.delete(api_endpoint)
+        
         return response.json().get("message", "Errore nella cancellazione del timer.")
     except Exception as e:
         return f"Errore: {e}"
 
+
 def list_timers():
     """Mostra i timer attivi e i secondi rimanenti."""
     try:
-        response = requests.get("http://127.0.0.1:5100/api/timers")
+        # Costruisce l'URL usando IRIS_API_URL
+        api_endpoint = f"{IRIS_API_URL}/api/timers"
+        
+        response = requests.get(api_endpoint)
         data = response.json()
+        
         if not data:
             return "Nessun timer attivo."
+            
         result = []
         for name, remaining in data.items():
             result.append(f"{name}: {remaining} secondi rimanenti")
